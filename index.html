@@ -111,23 +111,22 @@
             return text && String(text).length !== 0;
         }
 
-        function phoneReplacer(match, countryCode, plus, contryNumber, p4, p5, p6, offset, string) {
-            // p1 is nondigits, p2 digits, and p3 non-alphanumerics
+        function phoneReplacer(match, p1, p2, p3, p4, p5, p6, offset, string) {
             var result = [p4, p5, p6].join('-');
-            if (countryCode && countryCode.length !== 0) {
-                result = [countryCode, result].join('-');
+            if (p1 && p1.length !== 0) {
+                result = [p1, result].join('-');
             }
             return result;
         }
 
         function FormatPhoneNumber(text) {
             if (!IsPhoneNumberValid(text)) return null;
-            return String(text).replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, '$4 $5 $6');
+            return String(text).replace(/\s/g, '').replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, '$4 $5 $6');
         }
 
         function FormatPhoneNumberURL(text) {
             if (!IsPhoneNumberValid(text)) return null;
-            return String(text).replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, phoneReplacer);
+            return String(text).replace(/\s/g, '').replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, phoneReplacer);
         }
 
 
@@ -223,6 +222,8 @@
                 .setLngLat(feature.geometry.coordinates)
                 .setHTML(rendered)
                 .addTo(map);
+
+            console.log(FormatPhoneNumberURL(properties.Phone));
         });
 
     </script>
