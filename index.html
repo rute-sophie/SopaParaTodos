@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Sopa para Todos</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+
+            color: #303030;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .popup {
+            min-width: 130px;
+        }
+
+        .popup h3 {
+            margin-top: 0;
+            margin-bottom: .8em;
+        }
+
+        .popup p {
+            margin-top: 0.1em;
+            margin-bottom: 0.1em;
+        }
+
+        .popup .button {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #2651D4;
+            border: 1px solid #2651D4;
+            border-radius: 7px;
+            text-align: center;
+            margin-top: 0.8em;
+            transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+        }
+
+        .popup .button:hover {
+            background-color: #ffffff;
+            color: #2651D4;
+        }
+
+        .popup .phoneUrl {
+            text-decoration: none;
+            color: #2651D4;
+        }
+    </style>
+
+    <script src="https://unpkg.com/mustache@latest"></script>
+    <script src='mustache.js'></script>
+</head>
+
+<body>
+    <div id='map'></div>
+    <script id="popup-template" type="x-tmpl-mustache">
+        <h3>{{name}}</h3>
+        {{#showPhone}}
+        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
+        {{/showPhone}}
+        <p>coord: {{latitude}},{{longitude}}</p>
+        <a class="button" href="{{url}}" target="_blank">Navegar</a>
+    </script>
+    <script>
+        var popupTemplate;
+        var deviceType = "empty";
+        var numberFormater = new Intl.NumberFormat('pt-PT', { maximumSignificantDigits: 5 });
+
+        function IsiOS() {
+            return [
+                'iPad Simulator',
+                'iPhone Simulator',
+                'iPod Simulator',
+                'iPad',
+                'iPhone',
+                'iPod'
+            ].includes(navigator.platform)
+                // iPad on iOS 13 detection
+                || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+        }
+
+        function IsAndroid() {
+            return (/(android)/i.test(navigator.userAgent)) || /(android)/i.test(navigator.platform);
+        }
+
+        function GetDeviceType() {
+            var res = "web";
+            if (IsAndroid()) {
+                res = "android";
+            }
+            else if (IsiOS()) {
+                res = "ios";
+            }
+            return res;
+        }
+
+        function IsPhoneNumberValid(text) {
+            return text && String(text).length !== 0;
+        }
+
+        function phoneReplacer(match, countryCode, plus, contryNumber, p4, p5, p6, offset, string) {
+            // p1 is nondigits, p2 digits, and p3 non-alphanumerics
+            var result = [p4, p5, p6].join('-');
+            if (countryCode && countryCode.length !== 0) {
+                result = [countryCode, result].join('-');
+            }
+            return result;
+        }
+
+        function FormatPhoneNumber(text) {
+            if (!IsPhoneNumberValid(text)) return null;
+            return String(text).replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, '$4 $5 $6');
+        }
+
+        function FormatPhoneNumberURL(text) {
+            if (!IsPhoneNumberValid(text)) return null;
+            return String(text).replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, phoneReplacer);
+        }
+
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            popupTemplate = document.getElementById('popup-template').innerHTML;
+
+            deviceType = GetDeviceType();
+        });
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoicmljYXJkb2Vwcm9kcmlndWVzIiwiYSI6ImNra3JoM2M0dDAzbXYybnA2cWlnNzQ1NmsifQ.wSNvYjHSceafKy-fPUb-yg'; // replace this with your access token
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/ricardoeprodrigues/ckks90f7e0wrp17o5zb2vj7yo', // replace this with your style URL
+            center: [-8.450, 39.511],
+            zoom: 5.83
+        });
+
+        // Add geolocate control to the map.
+        map.addControl(
+            new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                fitBoundsOptions: {
+                    maxZoom: 15
+                },
+                trackUserLocation: true
+            })
+        );
+
+        map.on('click', function (e) {
+            var features = map.queryRenderedFeatures(e.point, {
+                layers: ['sopaparatodos'] // replace this with the name of the layer
+            });
+
+            if (!features.length) {
+                return;
+            }
+
+            var feature = features[0];
+
+            var zoom = map.getZoom();
+
+            // check if zoom is needed to see all locations
+            if (zoom < 9.5) {
+                map.flyTo({
+                    center: feature.geometry.coordinates,
+                    zoom: 10,
+                    essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                });
+                return;
+            }
+
+            var latitude = feature.geometry.coordinates[1];
+            var longitude = feature.geometry.coordinates[0];
+
+            var properties = feature.properties;
+            var mapurl = properties.GoogleMapsURL;
+            // Check if GoogleMapsURL is defined, if not use coordinates
+            if (!mapurl || mapurl.length === 0) {
+                switch (deviceType) {
+                    case "android":
+                        // "google.navigation:q=" + latitude + "," + longitude;
+                        // "geo:0,0?q=" + latitude + "," + longitude;
+                        var android = "geo:0,0?q=" + latitude + "," + longitude;
+                        mapurl = android;
+                        break;
+
+                    case "ios": // fallthrough
+                    case "web": // fallthrough
+                    default:
+                        // "https://www.google.com/maps/dir/?api=1&destination=" + latitude + "," + longitude;
+                        var web = "https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude;
+                        mapurl = web;
+                        break;
+                }
+            }
+
+            var view = {
+                name: properties.Name,
+
+                showPhone: IsPhoneNumberValid(properties.Phone),
+                phone: FormatPhoneNumber(properties.Phone),
+                phoneUrl: FormatPhoneNumberURL(properties.Phone),
+
+                latitude: numberFormater.format(latitude),
+                longitude: numberFormater.format(longitude),
+                url: mapurl
+            };
+            var rendered = Mustache.render(popupTemplate, view);
+
+            var popup = new mapboxgl.Popup({ offset: [0, -15], className: "popup" })
+                .setLngLat(feature.geometry.coordinates)
+                .setHTML(rendered)
+                .addTo(map);
+        });
+
+    </script>
+</body>
+
+</html>
