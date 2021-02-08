@@ -4,6 +4,8 @@
 <head>
     <meta charset='utf-8' />
     <title>Sopa para Todos</title>
+    <!-- soup-fill.png -->
+    <link rel="shortcut icon" href="soup-fill.png" />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.css' rel='stylesheet' />
@@ -13,6 +15,8 @@
             padding: 0;
 
             color: #303030;
+
+            font: 12px/20px Helvetica Neue, Arial, Helvetica, sans-serif;
         }
 
         #map {
@@ -58,14 +62,85 @@
             text-decoration: none;
             color: #2651D4;
         }
+
+        .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 7em;
+        }
+
+        .icon .icon-img {
+            max-width: 100%;
+        }
+
+        /* Small Devices, Tablets */
+        @media only screen and (min-width : 768px) {
+            .icon {
+                width: 9em;
+            }
+        }
+
+        .mapboxgl-ctrl-top-right .info-ctrl {
+            pointer-events: auto;
+            margin: 46px 10px 0 0;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, .1);
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .info-button {
+            width: 29px;
+            height: 29px;
+            display: block;
+            padding: 0;
+            outline: none;
+            border: 0;
+            box-sizing: border-box;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 1.3em;
+        }
+
+        .info-button:hover {
+            background-color: rgba(0, 0, 0, .05);
+        }
+
+        .info-button > i {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Extra Small Devices, Phones */
+        /* @media only screen and (min-width : 480px) {} */
+
+        /* Small Devices, Tablets */
+        /* @media only screen and (min-width : 768px) {} */
+
+        /* Medium Devices, Desktops */
+        /* @media only screen and (min-width : 992px) {} */
+
+        /* Large Devices, Wide Screens */
+        /* @media only screen and (min-width : 1200px) {} */
     </style>
 
-    <script src="https://unpkg.com/mustache@latest"></script>
+    <script src="https://kit.fontawesome.com/0d97afc995.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://unpkg.com/mustache@latest"></script> -->
     <script src='mustache.js'></script>
 </head>
 
 <body>
     <div id='map'></div>
+
+    <div class="icon"><img src="sopaparatodos-logo.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
+
+    <!-- <div class="mapboxgl-ctrl-top-right">
+        <div class="mapboxgl-ctrl info-ctrl">
+            <button class="info-button" onclick="ToggleInfo()"><i class="fa fa-info" aria-hidden="true"></i></button>
+        </div>
+    </div> -->
+
     <script id="popup-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
         {{#showPhone}}
@@ -225,6 +300,17 @@
 
             console.log(FormatPhoneNumberURL(properties.Phone));
         });
+
+        var isShowingInfo = false;
+
+        function ToggleInfo() {
+            isShowingInfo = !isShowingInfo;
+            if(isShowingInfo) {
+                // Open Info Popup
+            } else {
+                // Close Info Popup
+            }
+        }
 
     </script>
 </body>
