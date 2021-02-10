@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+	RewriteCond %{HTTPS} off [OR]
+	RewriteCond %{HTTP_HOST} ^www\.sopaparatodos\.pt [NC]
+	RewriteRule (.*) https://sopaparatodos.pt/$1 [L,R=301]
+</IfModule>
