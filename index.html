@@ -5,12 +5,20 @@
     <meta charset='utf-8' />
     <title>Sopa para Todos</title>
     <!-- soup-fill.png -->
-    <link rel="shortcut icon" href="soup-fill.png" />
+    <link rel="shortcut icon" href="media/taca_sopa_30x30.svg" />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body {
+
+            /* Main colors
+                Gray: #303030
+                Green Light: #acdfb1
+                Green Dark: #54b15d
+                Orange: #f19e41
+             */
+
             margin: 0;
             padding: 0;
 
@@ -45,8 +53,11 @@
             width: 100%;
             text-decoration: none;
             color: #ffffff;
-            background-color: #2651D4;
-            border: 1px solid #2651D4;
+            /* #acdfb1 */
+            /* background-color: #2651D4;
+            border: 1px solid #2651D4; */
+            background-color: #54b15d;
+            border: 1px solid #54b15d;
             border-radius: 7px;
             text-align: center;
             margin-top: 0.8em;
@@ -55,12 +66,12 @@
 
         .popup .button:hover {
             background-color: #ffffff;
-            color: #2651D4;
+            color: #54b15d;
         }
 
         .popup .phoneUrl {
             text-decoration: none;
-            color: #2651D4;
+            color: #54b15d;
         }
 
         .icon {
@@ -68,16 +79,17 @@
             top: 0;
             left: 0;
             width: 10em;
+            cursor: pointer;
         }
 
-        .icon .icon-img {
+        img {
             max-width: 100%;
         }
 
         /* Small Devices, Tablets */
         @media only screen and (min-width : 768px) {
             .icon {
-                width: 13em;
+                width: 15em;
             }
         }
 
@@ -106,10 +118,128 @@
             background-color: rgba(0, 0, 0, .05);
         }
 
-        .info-button > i {
+        .info-button>i {
             display: block;
             width: 100%;
             text-align: center;
+        }
+
+        .sopas-popup-background {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .sopas-popup-background-click {
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .sopas-popup {
+            position: relative;
+            display: block;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, .1);
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .sopas-popup .close-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: none;
+            border: none;
+            margin: 0;
+            padding: 10px 10px;
+            cursor: pointer;
+            font-size: 1.8em;
+        }
+
+        .sopas-popup .content {
+            padding: 1em 1em;
+        }
+
+        .sopas-popup .logo {
+            width: 65%;
+            margin: -5% auto;
+        }
+
+        .sopas-popup .description {
+            font-size: 1.2em;
+            text-align: justify;
+            text-align-last: left;
+        }
+
+        .sopas-popup .description p {
+            margin-top: 0;
+        }
+
+        .sopas-popup .follow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sopas-popup .follow-link {
+            display: inline-block;
+            text-align: center;
+            width: 8em;
+            background-color: #54b15d;
+            border: 1px solid #54b15d;
+            border-radius: 4px;
+            color: white;
+            font-size: 1.5em;
+            padding: 0.5em 0;
+            transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+        }
+
+        .sopas-popup .follow-link:hover {
+            background-color: #ffffff;
+            color: #54b15d;
+        }
+
+        .sopas-popup .follow-link.facebook {
+            background: #f19e41;
+            border: 1px solid #f19e41;
+        }
+
+        .sopas-popup .follow-link.facebook:hover {
+            background-color: #ffffff;
+            color: #f19e41;
+        }
+
+
+        @media only screen and (min-width : 768px) {
+            .sopas-popup {
+                width: 35em;
+            }
+
+            .sopas-popup .content {
+                padding: 1em 2em;
+            }
+
+            .sopas-popup .logo {
+                margin: 0 auto;
+            }
+
+            .sopas-popup .follow {
+                justify-content: space-around;
+                justify-content: space-evenly;
+                margin-top: 2.5em;
+            }
         }
 
         /* Extra Small Devices, Phones */
@@ -123,6 +253,10 @@
 
         /* Large Devices, Wide Screens */
         /* @media only screen and (min-width : 1200px) {} */
+
+        .hidden {
+            display: none;
+        }
     </style>
 
     <script src="https://kit.fontawesome.com/0d97afc995.js" crossorigin="anonymous"></script>
@@ -133,13 +267,40 @@
 <body>
     <div id='map'></div>
 
-    <div class="icon"><img src="sopaparatodos-logo.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
+    <div class="icon" onclick="ToggleInfo()"><img src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
 
-    <!-- <div class="mapboxgl-ctrl-top-right">
+    <div class="mapboxgl-ctrl-top-right">
         <div class="mapboxgl-ctrl info-ctrl">
             <button class="info-button" onclick="ToggleInfo()"><i class="fa fa-info" aria-hidden="true"></i></button>
         </div>
-    </div> -->
+    </div>
+
+    <div class="sopas-popup-background hidden" id="popup">
+        <div class="sopas-popup-background-click" onclick="ToggleInfo()"></div>
+        <div class="sopas-popup">
+            <button class="close-button" onclick="ToggleInfo()"><i class="fas fa-times"></i></button>
+            <div class="content">
+                <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
+                <div class="description">
+                    <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
+                        a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
+                        perto de nós vivem.</p>
+                    <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
+                        precise e
+                        não tenha possibilidade de adquirir a possa levantar.</p>
+                    <p><i>Precisas de ajuda?</i>
+                        Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
+                        restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
+                </div>
+                <div class="follow">
+                    <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook" target="_blank"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram" target="_blank"><i
+                            class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script id="popup-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
@@ -305,10 +466,14 @@
 
         function ToggleInfo() {
             isShowingInfo = !isShowingInfo;
-            if(isShowingInfo) {
+            var el = document.getElementById('popup');
+
+            if (isShowingInfo) {
                 // Open Info Popup
+                el.classList.remove('hidden');
             } else {
                 // Close Info Popup
+                el.classList.add('hidden');
             }
         }
 
