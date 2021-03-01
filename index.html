@@ -34,6 +34,7 @@
 
             /* Main colors
                 Gray: #303030
+                Light Gray: #aaaaaa
                 Green Light: #acdfb1
                 Green Dark: #54b15d
                 Orange: #f19e41
@@ -103,6 +104,24 @@
         .sopas-list i {
             color:  #f19e41;
             padding-right: 0.3em;
+        }
+
+        .sopas-modalities p {
+            display: inline;
+            color: #f19e41;
+            font-size: 1.2em;
+            margin-right: 0.2em;
+        }
+
+        .sopas-modalities .about-modalities {
+            float: right;
+            padding: 0;
+            outline: none;
+            border: 0;
+            background-color: transparent;
+            cursor: pointer;
+            margin-top: 0.3em;
+            color: #aaaaaa;
         }
 
         .icon {
@@ -336,6 +355,23 @@
 
     <script id="popup-restaurant-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
+        {{#showModalities}}
+        <div class="sopas-modalities">
+            {{#soupDonation}}
+            <p title="Sopa Paga"><i class="fas fa-mug-hot"></i></p>
+            {{/soupDonation}}
+
+            {{#freeDonation}}
+            <p title="Donativo Livre"><i class="fas fa-hand-holding-usd"></i></p>
+            {{/freeDonation}}
+            
+            {{#foodDonation}}
+            <p title="Donativo em Géneros"><i class="fas fa-carrot"></i></p>
+            {{/foodDonation}}
+
+            <!-- <button class="about-modalities" title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button> -->
+        </div>
+        {{/showModalities}}
         {{#showPhone}}
         <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
         {{/showPhone}}
@@ -498,8 +534,14 @@
 
                 latitude: numberFormater.format(latitude),
                 longitude: numberFormater.format(longitude),
-                url: mapurl
+                url: mapurl,
+
+                showModalities: false,
+                soupDonation: IsNotNullOrEmpty(properties["sopa-paga"]) && properties["sopa-paga"] === "sim",
+                freeDonation: IsNotNullOrEmpty(properties["donativo-livre"]) && properties["donativo-livre"] === "sim",
+                foodDonation: IsNotNullOrEmpty(properties["donativo-generos"]) && properties["donativo-generos"] === "sim",
             };
+            view.showModalities = view.soupDonation || view.freeDonation || view.foodDonation;
             var rendered = Mustache.render(popupRestaurantTemplate, view);
 
             var popup = new mapboxgl.Popup({ offset: [0, -15], className: "popup" })
