@@ -26,8 +26,8 @@
     <meta property="og:image:secure_url"
         content="https://sopaparatodos.pt/media/Logo_sem_letras_background_512x512.png" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="842" />
-    <meta property="og:image:height" content="842" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
 
     <style>
         body {
@@ -92,6 +92,17 @@
         .popup .phoneUrl {
             text-decoration: none;
             color: #54b15d;
+        }
+
+        .sopas-list {
+            list-style-type: none;
+            margin: 0 0 0 1em;
+            padding: 0;
+        }
+
+        .sopas-list i {
+            color:  #f19e41;
+            padding-right: 0.3em;
         }
 
         .icon {
@@ -323,16 +334,41 @@
         </div>
     </div>
 
-    <script id="popup-template" type="x-tmpl-mustache">
+    <script id="popup-restaurant-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
         {{#showPhone}}
         <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
         {{/showPhone}}
+        {{#showCoord}}
         <p>coord: {{latitude}},{{longitude}}</p>
+        {{/showCoord}}
         <a class="button" href="{{url}}" target="_blank">Navegar</a>
     </script>
+    <script id="popup-deliveryservice-template" type="x-tmpl-mustache">
+        <h3>{{name}}</h3>
+
+        {{#showPhone}}
+        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
+        {{/showPhone}}
+
+        {{#showDistributionLocations}}
+        <div>
+            <p>distribuem em:</p>
+            <ul class="sopas-list">
+                {{#distributionLocations}}
+                <li><i class="fas fa-chevron-right"></i> {{name}}</li>
+                {{/distributionLocations}}
+            </ul>
+        </div>
+        {{/showDistributionLocations}}
+
+        <a class="button" href="{{url}}" target="_blank">Contactar</a>
+    </script>
     <script>
-        var popupTemplate;
+        var TESTING = false;
+
+        var popupRestaurantTemplate;
+        var popupDeliveryServiceTemplate;
         var deviceType = "empty";
         var numberFormater = new Intl.NumberFormat('pt-PT', { maximumSignificantDigits: 5 });
 
@@ -364,8 +400,15 @@
             return res;
         }
 
-        function IsPhoneNumberValid(text) {
+        function IsNotNullOrEmpty(text) {
             return text && String(text).length !== 0;
+        }
+
+        function SplitString (text) {
+            var list = text.split(",");
+            return list.map(function(e) {
+                return e.trim();
+            });
         }
 
         function phoneReplacer(match, p1, p2, p3, p4, p5, p6, offset, string) {
@@ -377,26 +420,32 @@
         }
 
         function FormatPhoneNumber(text) {
-            if (!IsPhoneNumberValid(text)) return null;
+            if (!IsNotNullOrEmpty(text)) return null;
             return String(text).replace(/\s/g, '').replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, '$4 $5 $6');
         }
 
         function FormatPhoneNumberURL(text) {
-            if (!IsPhoneNumberValid(text)) return null;
+            if (!IsNotNullOrEmpty(text)) return null;
             return String(text).replace(/\s/g, '').replace(/((\+|00)(\d{3}))?(\d{3})(\d{3})(\d{3})/, phoneReplacer);
         }
 
 
         document.addEventListener("DOMContentLoaded", (event) => {
-            popupTemplate = document.getElementById('popup-template').innerHTML;
+            popupRestaurantTemplate = document.getElementById('popup-restaurant-template').innerHTML;
+            popupDeliveryServiceTemplate = document.getElementById('popup-deliveryservice-template').innerHTML;
 
             deviceType = GetDeviceType();
         });
 
         mapboxgl.accessToken = 'pk.eyJ1IjoicmljYXJkb2Vwcm9kcmlndWVzIiwiYSI6ImNra3JoM2M0dDAzbXYybnA2cWlnNzQ1NmsifQ.wSNvYjHSceafKy-fPUb-yg'; // replace this with your access token
+
+        var style = 'mapbox://styles/ricardoeprodrigues/ckks90f7e0wrp17o5zb2vj7yo';
+        if (TESTING) {
+            style = 'mapbox://styles/ricardoeprodrigues/cklpidy614ygp17npgmk5kney';
+        }
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/ricardoeprodrigues/ckks90f7e0wrp17o5zb2vj7yo', // replace this with your style URL
+            style: style,
             center: [-8.450, 39.511],
             zoom: 5.83
         });
@@ -414,29 +463,7 @@
             })
         );
 
-        map.on('click', function (e) {
-            var features = map.queryRenderedFeatures(e.point, {
-                layers: ['sopaparatodos'] // replace this with the name of the layer
-            });
-
-            if (!features.length) {
-                return;
-            }
-
-            var feature = features[0];
-
-            var zoom = map.getZoom();
-
-            // check if zoom is needed to see all locations
-            if (zoom < 9.5) {
-                map.flyTo({
-                    center: feature.geometry.coordinates,
-                    zoom: 10,
-                    essential: true // this animation is considered essential with respect to prefers-reduced-motion
-                });
-                return;
-            }
-
+        function onRestaurantClick(feature) {
             var latitude = feature.geometry.coordinates[1];
             var longitude = feature.geometry.coordinates[0];
 
@@ -465,7 +492,7 @@
             var view = {
                 name: properties.Name,
 
-                showPhone: IsPhoneNumberValid(properties.Phone),
+                showPhone: IsNotNullOrEmpty(properties.Phone),
                 phone: FormatPhoneNumber(properties.Phone),
                 phoneUrl: FormatPhoneNumberURL(properties.Phone),
 
@@ -473,14 +500,87 @@
                 longitude: numberFormater.format(longitude),
                 url: mapurl
             };
-            var rendered = Mustache.render(popupTemplate, view);
+            var rendered = Mustache.render(popupRestaurantTemplate, view);
 
             var popup = new mapboxgl.Popup({ offset: [0, -15], className: "popup" })
                 .setLngLat(feature.geometry.coordinates)
                 .setHTML(rendered)
                 .addTo(map);
+        }
 
-            console.log(FormatPhoneNumberURL(properties.Phone));
+        function onDeliveryServiceClick(feature) {
+            var latitude = feature.geometry.coordinates[1];
+            var longitude = feature.geometry.coordinates[0];
+
+            var properties = feature.properties;
+            var url = properties.url;
+
+            var view = {
+                name: properties.Name,
+
+                showPhone: IsNotNullOrEmpty(properties.Phone),
+                phone: FormatPhoneNumber(properties.Phone),
+                phoneUrl: FormatPhoneNumberURL(properties.Phone),
+
+                latitude: numberFormater.format(latitude),
+                longitude: numberFormater.format(longitude),
+                url: url,
+
+                showDistributionLocations: false,
+                distributionLocations: []
+            };
+            // Transform the distribution zone string into an array and add to view
+            var distLocText = properties["zona-distribuicao"];
+            if (distLocText && IsNotNullOrEmpty(distLocText)) {
+                var locations = SplitString(distLocText);
+                locations.forEach(location => {
+                    view.distributionLocations.push({ "name": location });
+                });
+                if (view.distributionLocations.length > 0) {
+                    view.showDistributionLocations = true;
+                }
+            }
+
+            var rendered = Mustache.render(popupDeliveryServiceTemplate, view);
+
+            var popup = new mapboxgl.Popup({ offset: [0, -15], className: "popup" })
+                .setLngLat(feature.geometry.coordinates)
+                .setHTML(rendered)
+                .addTo(map);
+        }
+
+        map.on('click', function (e) {
+            var features = map.queryRenderedFeatures(e.point, {
+                layers: ['sopaparatodos', 'sopaparatodos-domicilio'] // replace this with the name of the layer
+            });
+
+            if (!features.length) {
+                return;
+            }
+
+            var feature = features[0];
+
+            var zoom = map.getZoom();
+
+            // check if zoom is needed to see all locations
+            if (zoom < 9.5) {
+                map.flyTo({
+                    center: feature.geometry.coordinates,
+                    zoom: 10,
+                    essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                });
+                return;
+            }
+
+            switch (feature.layer.id) {
+                case "sopaparatodos-domicilio":
+                    onDeliveryServiceClick(feature);
+                    break;
+                case "sopaparatodos":
+                default:
+                    onRestaurantClick(feature);
+                    break;
+            }
         });
 
         var isShowingInfo = false;
