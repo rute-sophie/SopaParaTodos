@@ -30,6 +30,8 @@
     <meta property="og:image:height" content="512" />
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+
         body {
 
             /* Main colors
@@ -102,11 +104,12 @@
         }
 
         .sopas-list i {
-            color:  #f19e41;
+            color: #f19e41;
             padding-right: 0.3em;
         }
 
-        .sopas-modalities p {
+        .sopas-modalities p,
+        .sopas-modalities-icon {
             display: inline;
             color: #f19e41;
             font-size: 1.2em;
@@ -204,6 +207,12 @@
             box-shadow: 0 0 0 2px rgba(0, 0, 0, .1);
             border-radius: 4px;
             background: #fff;
+        }
+
+        .sopas-popup .title {
+            font-family: 'Amatic SC', cursive;
+            font-size: 3rem;
+            text-align: center;
         }
 
         .sopas-popup .close-button {
@@ -317,12 +326,13 @@
 <body>
     <div id='map'></div>
 
-    <div class="icon" onclick="ToggleInfo()"><img src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos"
-            class="icon-img"></div>
+    <div class="icon" onclick="ToggleInfoTemplate('popup-info-general-template')"><img
+            src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
 
     <div class="mapboxgl-ctrl-top-right">
         <div class="mapboxgl-ctrl info-ctrl">
-            <button class="info-button" onclick="ToggleInfo()"><i class="fa fa-info" aria-hidden="true"></i></button>
+            <button class="info-button" onclick="ToggleInfoTemplate('popup-info-general-template')"><i
+                    class="fa fa-info" aria-hidden="true"></i></button>
         </div>
     </div>
 
@@ -330,29 +340,13 @@
         <div class="sopas-popup-background-click" onclick="ToggleInfo()"></div>
         <div class="sopas-popup">
             <button class="close-button" onclick="ToggleInfo()"><i class="fas fa-times"></i></button>
-            <div class="content">
-                <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
-                <div class="description">
-                    <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
-                        a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
-                        perto de nós vivem.</p>
-                    <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
-                        precise e
-                        não tenha possibilidade de adquirir a possa levantar.</p>
-                    <p><i>Precisas de ajuda?</i>
-                        Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
-                        restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
-                </div>
-                <div class="follow">
-                    <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
-                        target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
-                        target="_blank"><i class="fab fa-instagram"></i></a>
-                </div>
+            <div class="content" id="sopas-popup-content">
             </div>
         </div>
     </div>
 
+
+    <!-- element pop up templates (informational popup for a specific map element)-->
     <script id="popup-restaurant-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
         {{#showModalities}}
@@ -369,7 +363,7 @@
             <p title="Donativo em Géneros"><i class="fas fa-carrot"></i></p>
             {{/foodDonation}}
 
-            <!-- <button class="about-modalities" title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button> -->
+            <button class="about-modalities" onclick="ToggleInfoTemplate('popup-info-modalities-template')" title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
         </div>
         {{/showModalities}}
         {{#showPhone}}
@@ -400,11 +394,50 @@
 
         <a class="button" href="{{url}}" target="_blank">Contactar</a>
     </script>
+
+    <!-- Sopas pop up templates (informational popup for the map as a whole)-->
+    <script id="popup-info-general-template" type="x-tmpl-mustache">
+        <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
+        <div class="description">
+            <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
+                a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
+                perto de nós vivem.</p>
+            <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
+                precise e
+                não tenha possibilidade de adquirir a possa levantar.</p>
+            <p><i>Precisas de ajuda?</i>
+                Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
+                restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
+        </div>
+        <div class="follow">
+            <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
+                target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
+                target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </script>
+    <script id="popup-info-modalities-template" type="x-tmpl-mustache">
+        <h2 class="title">Modalidades</h3>
+        <div class="description">
+            <p><i class="fas fa-mug-hot sopas-modalities-icon"></i> <b>Sopa paga</b>: pode pagar uma ou mais sopas
+                num estabelecimento aderente à sua escolha que disponha desta modalidade, sendo o valor da sopa
+                definido por cada estabelecimento e consoante o método de pagamento que este disponha.
+            </p>
+            <p><i class="fas fa-hand-holding-usd sopas-modalities-icon"></i> <b>Donativo livre</b>: pode fazer um 
+                donativo monetário na quantia que quiser para um estabelecimento aderente à sua escolha que 
+                disponha desta modalidade, consoante o método de pagamento disponível.
+            </p>
+            <p><i class="fas fa-carrot sopas-modalities-icon"></i> <b>Doação em Géneros</b>: pode doar ingredientes
+                para a confecção da sopa num estabelecimento aderente à sua escolha que disponha desta modalidade.
+            </p>
+        </div>
+    </script>
     <script>
         var TESTING = false;
 
         var popupRestaurantTemplate;
         var popupDeliveryServiceTemplate;
+        var sopasPopupContent;
         var deviceType = "empty";
         var numberFormater = new Intl.NumberFormat('pt-PT', { maximumSignificantDigits: 5 });
 
@@ -440,9 +473,9 @@
             return text && String(text).length !== 0;
         }
 
-        function SplitString (text) {
+        function SplitString(text) {
             var list = text.split(",");
-            return list.map(function(e) {
+            return list.map(function (e) {
                 return e.trim();
             });
         }
@@ -469,6 +502,8 @@
         document.addEventListener("DOMContentLoaded", (event) => {
             popupRestaurantTemplate = document.getElementById('popup-restaurant-template').innerHTML;
             popupDeliveryServiceTemplate = document.getElementById('popup-deliveryservice-template').innerHTML;
+
+            sopasPopupContent = document.getElementById('sopas-popup-content');
 
             deviceType = GetDeviceType();
         });
@@ -537,9 +572,9 @@
                 url: mapurl,
 
                 showModalities: false,
-                soupDonation: IsNotNullOrEmpty(properties["sopa-paga"]) && properties["sopa-paga"] === "sim",
-                freeDonation: IsNotNullOrEmpty(properties["donativo-livre"]) && properties["donativo-livre"] === "sim",
-                foodDonation: IsNotNullOrEmpty(properties["donativo-generos"]) && properties["donativo-generos"] === "sim",
+                soupDonation: IsNotNullOrEmpty(properties["sopa-paga"]) && properties["sopa-paga"].toLowerCase().trim() === "sim",
+                freeDonation: IsNotNullOrEmpty(properties["donativo-livre"]) && properties["donativo-livre"].toLowerCase().trim() === "sim",
+                foodDonation: IsNotNullOrEmpty(properties["donativo-generos"]) && properties["donativo-generos"].toLowerCase().trim() === "sim",
             };
             view.showModalities = view.soupDonation || view.freeDonation || view.foodDonation;
             var rendered = Mustache.render(popupRestaurantTemplate, view);
@@ -626,6 +661,12 @@
         });
 
         var isShowingInfo = false;
+
+        function ToggleInfoTemplate(templateName) {
+            var template = document.getElementById(templateName).innerHTML;
+            sopasPopupContent.innerHTML = Mustache.render(template, null);
+            ToggleInfo();
+        }
 
         function ToggleInfo() {
             isShowingInfo = !isShowingInfo;
