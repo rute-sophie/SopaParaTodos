@@ -76,16 +76,53 @@ body {
     padding-right: 0.3em;
 }
 
+.sopas-modalities,
+.sopas-payments {
+    display        : flex;
+    flex-direction : row;
+    justify-content: left;
+    align-content  : center;
+}
+
 .sopas-modalities p,
-.sopas-modalities-icon {
+.sopas-modalities-icon,
+.sopas-payments p,
+.sopas-payments-icon {
     display     : inline;
     color       : #f19e41;
     font-size   : 1.2em;
     margin-right: 0.2em;
 }
 
-.sopas-modalities .about-modalities {
-    float           : right;
+.sopas-payments p,
+.sopas-payments-icon {
+    color: #54b15d;
+}
+
+.sopas-modalities .img-icon,
+.sopas-payments .img-icon {
+    display        : flex;
+    justify-content: center;
+    align-content  : center;
+    margin-left: 0.1em;
+}
+
+.sopas-payments-icon.img-icon {
+    display       : inline;
+    vertical-align: bottom;
+}
+
+.sopas-modalities .img-icon img,
+.sopas-payments .img-icon img,
+.sopas-payments-icon.img-icon img {
+    align-self   : center;
+    /* max-width : 1rem; */
+    max-height   : 1rem;
+}
+
+.sopas-modalities .about,
+.sopas-payments .about {
+    margin-left     : auto;
     padding         : 0;
     outline         : none;
     border          : 0;

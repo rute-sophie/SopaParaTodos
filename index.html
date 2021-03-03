@@ -42,20 +42,20 @@
 <body>
     <div id='map'></div>
 
-    <div class="icon" onclick="ToggleInfoTemplate('popup-info-general-template')"><img
+    <div class="icon" onclick="ShowInfoTemplate('popup-info-general-template')"><img
             src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
 
     <div class="mapboxgl-ctrl-top-right">
         <div class="mapboxgl-ctrl info-ctrl">
-            <button class="info-button" onclick="ToggleInfoTemplate('popup-info-general-template')"><i
+            <button class="info-button" onclick="ShowInfoTemplate('popup-info-general-template')"><i
                     class="fa fa-info" aria-hidden="true"></i></button>
         </div>
     </div>
 
     <div class="sopas-popup-background hidden" id="popup">
-        <div class="sopas-popup-background-click" onclick="ToggleInfo()"></div>
+        <div class="sopas-popup-background-click" onclick="SetInfoVisibility(false)"></div>
         <div class="sopas-popup">
-            <button class="close-button" onclick="ToggleInfo()"><i class="fas fa-times"></i></button>
+            <button class="close-button" onclick="SetInfoVisibility(false)"><i class="fas fa-times"></i></button>
             <div class="content" id="sopas-popup-content">
                 <!-- To be filled by JS -->
             </div>
@@ -80,9 +80,36 @@
             <p title="Donativo em Géneros"><i class="fas fa-carrot"></i></p>
             {{/foodDonation}}
 
-            <button class="about-modalities" onclick="ToggleInfoTemplate('popup-info-modalities-template')" title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+            <button class="about" onclick="ShowInfoTemplate('popup-info-modalities-template')"
+                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
         </div>
         {{/showModalities}}
+        {{#showPayments}}
+        <div class="sopas-payments">
+            {{# bankTransferPayment }}
+            <p title="Transferência Multibanco"><i class="far fa-credit-card"></i></p>
+            {{/ bankTransferPayment }}
+
+            {{# moneyPayment }}
+            <p title="Pagamento em Dinheiro"><i class="fas fa-euro-sign"></i></p>
+            {{/ moneyPayment }}
+
+            {{# multibancoPayment }}
+            <p title="Multibanco" class="img-icon">
+                <img src="media/MB-logo.png" alt="Multibanco Logo">
+            </p>
+            {{/ multibancoPayment }}
+
+            {{# mbwayPayment }}
+            <p title="MBWay" class="img-icon">
+                <img src="media/MBWay-logo.png" alt="MBWay Logo">
+            </p>
+            {{/ mbwayPayment }}
+
+            <button class="about" onclick="ShowInfoTemplate('popup-info-payments-template')" 
+                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+        </div>
+        {{/showPayments}}
         {{#showPhone}}
         <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
         {{/showPhone}}
@@ -149,8 +176,34 @@
             </p>
         </div>
     </script>
+    <script id="popup-info-payments-template" type="x-tmpl-mustache">
+        <h2 class="title">Tipos de Pagamento</h3>
+        <div class="description">
+            <p><i class="far fa-credit-card sopas-payments-icon"></i> <b>Transferência Bancária</b>: pode realizar
+                uma transferência bancária através de um NIB ou IBAN disponibilizado pelo estabelecimento aderente
+                à sua escolha que disponha deste tipo de pagamento.
+            </p>
+            <p><i class="fas fa-euro-sign sopas-payments-icon"></i> <b>Em Dinheiro</b>: pode dirigir-se 
+                presencialmente e realizar a sua doação em dinheiro no estabelecimento aderente à sua escolha que
+                disponha deste tipo de pagamento.
+            </p>
+            <p>
+                <i title="Multibanco" class="sopas-payments-icon img-icon">
+                    <img src="media/MB-logo.png" alt="Multibanco Logo"></i> 
+                <b>Multibanco</b>: pode dirigir-se  presencialmente e realizar a sua doação monetária através do 
+                multibanco no estabelecimento aderente à sua escolha que disponha deste tipo de pagamento.
+            </p>
+            <p>
+                <i title="MBWay" class="sopas-payments-icon img-icon">
+                    <img src="media/MBWay-logo.png" alt="MBWay Logo"></i> 
+                <b>MBway</b>: pode realizar uma transferência monetária com recurso ao MBway através do contacto
+                telefónico disponibilizado no estabelecimento aderente à sua escolha que disponha deste tipo de 
+                pagamento.
+            </p>
+        </div>
+    </script>
 
-    
+
     <script src='index.js'></script>
 </body>
 

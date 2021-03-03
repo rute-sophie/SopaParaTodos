@@ -141,8 +141,16 @@ function onRestaurantClick(feature) {
         soupDonation: IsNotNullOrEmpty(properties["sopa-paga"]) && properties["sopa-paga"].toLowerCase().trim() === "sim",
         freeDonation: IsNotNullOrEmpty(properties["donativo-livre"]) && properties["donativo-livre"].toLowerCase().trim() === "sim",
         foodDonation: IsNotNullOrEmpty(properties["donativo-generos"]) && properties["donativo-generos"].toLowerCase().trim() === "sim",
+
+
+        showPayments: false,
+        bankTransferPayment: IsNotNullOrEmpty(properties["pagamento-transferencia"]) && properties["pagamento-transferencia"].toLowerCase().trim() === "sim",
+        moneyPayment: IsNotNullOrEmpty(properties["pagamento-dinheiro"]) && properties["pagamento-dinheiro"].toLowerCase().trim() === "sim",
+        multibancoPayment: IsNotNullOrEmpty(properties["pagamento-multibanco"]) && properties["pagamento-multibanco"].toLowerCase().trim() === "sim",
+        mbwayPayment: IsNotNullOrEmpty(properties["pagamento-mbway"]) && properties["pagamento-mbway"].toLowerCase().trim() === "sim",
     };
     view.showModalities = view.soupDonation || view.freeDonation || view.foodDonation;
+    view.showPayments = view.bankTransferPayment || view.moneyPayment || view.multibancoPayment || view.mbwayPayment;
     var rendered = Mustache.render(popupRestaurantTemplate, view);
 
     var popup = new mapboxgl.Popup({ offset: [0, -15], className: "popup" })
@@ -226,19 +234,16 @@ map.on('click', function (e) {
     }
 });
 
-var isShowingInfo = false;
-
-function ToggleInfoTemplate(templateName) {
+function ShowInfoTemplate(templateName) {
     var template = document.getElementById(templateName).innerHTML;
     sopasPopupContent.innerHTML = Mustache.render(template, null);
-    ToggleInfo();
+    SetInfoVisibility(true);
 }
 
-function ToggleInfo() {
-    isShowingInfo = !isShowingInfo;
+function SetInfoVisibility(visibility) {
     var el = document.getElementById('popup');
 
-    if (isShowingInfo) {
+    if (visibility) {
         // Open Info Popup
         el.classList.remove('hidden');
     } else {
