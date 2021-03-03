@@ -6,4 +6,4 @@ https://www.facebook.com/groups/1904898662997863
 
 Live version can be seen here:
 
-https://web.tecnico.ulisboa.pt/~ist173960/SopaParaTodos/
+https://sopaparatodos.pt/
