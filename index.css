@@ -132,6 +132,10 @@ body {
     color           : #aaaaaa;
 }
 
+.popup .address {
+    font-style: italic;
+}
+
 .icon {
     position: absolute;
     top     : 0;

@@ -133,6 +133,7 @@ function onRestaurantClick(feature) {
         phone: FormatPhoneNumber(properties.Phone),
         phoneUrl: FormatPhoneNumberURL(properties.Phone),
 
+        address: properties["Morada"],
         latitude: numberFormater.format(latitude),
         longitude: numberFormater.format(longitude),
         url: mapurl,

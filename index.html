@@ -67,6 +67,15 @@
     <script id="popup-restaurant-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
         {{#showModalities}}
+        {{#address}}
+        <p class="address">{{address}}</p>
+        {{/address}}
+        {{#showPhone}}
+        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
+        {{/showPhone}}
+        {{#showCoord}}
+        <p>coord: {{latitude}},{{longitude}}</p>
+        {{/showCoord}}
         <div class="sopas-modalities">
             {{#soupDonation}}
             <p title="Sopa Paga"><i class="fas fa-mug-hot"></i></p>
@@ -110,12 +119,6 @@
                 title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
         </div>
         {{/showPayments}}
-        {{#showPhone}}
-        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
-        {{/showPhone}}
-        {{#showCoord}}
-        <p>coord: {{latitude}},{{longitude}}</p>
-        {{/showCoord}}
         <a class="button" href="{{url}}" target="_blank">Navegar</a>
     </script>
     <script id="popup-deliveryservice-template" type="x-tmpl-mustache">
