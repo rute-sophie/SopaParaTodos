@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <!-- Metadata -->
+    <meta charset='utf-8' />
+    <meta http-equiv="content-language" content="pt">
+    <title>Sopa para Todos</title>
+    <meta name="description" content="Deixa uma sopa/refeição paga num estabelecimento aderente para que quem precise.">
+    <meta name="keywords"
+        content="Sopa para Todos, sopaparatodos, caridade, refeição, refeicao, restaurante, Portugal" />
+    <meta name="robots" content="index, follow">
+    <link rel="shortcut icon" href="media/taca_sopa_30x30.svg" />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <!-- https://developers.facebook.com/docs/sharing/webmasters -->
+    <meta property="og:url" content="https://sopaparatodos.pt/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_PT" />
+    <meta property="og:title" content="Sopa para Todos" />
+    <meta property="og:description"
+        content="Deixa uma sopa/refeição paga num estabelecimento aderente para que quem precise." />
+    <meta property="og:image" content="http://sopaparatodos.pt/media/Logo_sem_letras_background_512x512.png" />
+    <meta property="og:image:secure_url"
+        content="https://sopaparatodos.pt/media/Logo_sem_letras_background_512x512.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+
+
+    <!-- Mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.0/mapbox-gl.css' rel='stylesheet' />
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/0d97afc995.js" crossorigin="anonymous"></script>
+    <!-- Mustache.js -->
+    <script src='mustache.js'></script>
+
+
+    <link href='css/mapa.css' rel='stylesheet' />
+</head>
+
+<body>
+    <div id='map'></div>
+
+    <div class="icon" onclick="ShowInfoTemplate('popup-info-general-template')"><img
+            src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
+
+    <div class="mapboxgl-ctrl-top-right">
+        <div class="mapboxgl-ctrl info-ctrl">
+            <button class="info-button" onclick="ShowInfoTemplate('popup-info-general-template')"><i
+                    class="fa fa-info" aria-hidden="true"></i></button>
+        </div>
+    </div>
+
+    <div class="sopas-popup-background hidden" id="popup">
+        <div class="sopas-popup-background-click" onclick="SetInfoVisibility(false)"></div>
+        <div class="sopas-popup">
+            <button class="close-button" onclick="SetInfoVisibility(false)"><i class="fas fa-times"></i></button>
+            <div class="content" id="sopas-popup-content">
+                <!-- To be filled by JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- element pop up templates (informational popup for a specific map element)-->
+    <script id="popup-restaurant-template" type="x-tmpl-mustache">
+        <h3>{{name}}</h3>
+        {{#address}}
+        <p class="address">{{address}}</p>
+        {{/address}}
+        {{#showPhone}}
+        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
+        {{/showPhone}}
+        {{#showCoord}}
+        <p>coord: {{latitude}},{{longitude}}</p>
+        {{/showCoord}}
+        {{#showModalities}}
+        <div class="sopas-modalities">
+            {{#soupDonation}}
+            <p title="Sopa Paga"><i class="fas fa-mug-hot"></i></p>
+            {{/soupDonation}}
+
+            {{#freeDonation}}
+            <p title="Donativo Livre"><i class="fas fa-hand-holding-usd"></i></p>
+            {{/freeDonation}}
+
+            {{#foodDonation}}
+            <p title="Donativo em Géneros"><i class="fas fa-carrot"></i></p>
+            {{/foodDonation}}
+
+            <button class="about" onclick="ShowInfoTemplate('popup-info-modalities-template')"
+                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+        </div>
+        {{/showModalities}}
+        {{#showPayments}}
+        <div class="sopas-payments">
+            {{# bankTransferPayment }}
+            <p title="Transferência Multibanco"><i class="far fa-credit-card"></i></p>
+            {{/ bankTransferPayment }}
+
+            {{# moneyPayment }}
+            <p title="Pagamento em Dinheiro"><i class="fas fa-euro-sign"></i></p>
+            {{/ moneyPayment }}
+
+            {{# multibancoPayment }}
+            <p title="Multibanco" class="img-icon">
+                <img src="media/MB-logo.png" alt="Multibanco Logo">
+            </p>
+            {{/ multibancoPayment }}
+
+            {{# mbwayPayment }}
+            <p title="MBWay" class="img-icon">
+                <img src="media/MBWay-logo.png" alt="MBWay Logo">
+            </p>
+            {{/ mbwayPayment }}
+
+            <button class="about" onclick="ShowInfoTemplate('popup-info-payments-template')"
+                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+        </div>
+        {{/showPayments}}
+        <a class="button" href="{{url}}" target="_blank">Navegar</a>
+    </script>
+    <script id="popup-deliveryservice-template" type="x-tmpl-mustache">
+        <h3>{{name}}</h3>
+
+        {{#showPhone}}
+        <p>tele: <a class="phoneUrl" href="tel:{{phoneUrl}}">{{phone}}</a></p>
+        {{/showPhone}}
+
+        {{#showDistributionLocations}}
+        <div>
+            <p>distribuem em:</p>
+            <ul class="sopas-list">
+                {{#distributionLocations}}
+                <li><i class="fas fa-chevron-right"></i> {{name}}</li>
+                {{/distributionLocations}}
+            </ul>
+        </div>
+        {{/showDistributionLocations}}
+
+        <a class="button" href="{{url}}" target="_blank">Contactar</a>
+    </script>
+
+    <!-- Sopas pop up templates (informational popup for the map as a whole)-->
+    <script id="popup-info-general-template" type="x-tmpl-mustache">
+        <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
+        <div class="description">
+            <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
+                a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
+                perto de nós vivem.</p>
+            <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
+                precise e
+                não tenha possibilidade de adquirir a possa levantar.</p>
+            <p><i>Precisas de ajuda?</i>
+                Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
+                restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
+        </div>
+        <div class="follow">
+            <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
+                target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
+                target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </script>
+    <script id="popup-info-modalities-template" type="x-tmpl-mustache">
+        <h2 class="title">Modalidades</h3>
+        <div class="description">
+            <p><i class="fas fa-mug-hot sopas-modalities-icon"></i> <b>Sopa paga</b>: pode pagar uma ou mais sopas
+                num estabelecimento aderente à sua escolha que disponha desta modalidade, sendo o valor da sopa
+                definido por cada estabelecimento e consoante o método de pagamento que este disponha.
+            </p>
+            <p><i class="fas fa-hand-holding-usd sopas-modalities-icon"></i> <b>Donativo livre</b>: pode fazer um
+                donativo monetário na quantia que quiser para um estabelecimento aderente à sua escolha que
+                disponha desta modalidade, consoante o método de pagamento disponível.
+            </p>
+            <p><i class="fas fa-carrot sopas-modalities-icon"></i> <b>Doação em Géneros</b>: pode doar ingredientes
+                para a confecção da sopa num estabelecimento aderente à sua escolha que disponha desta modalidade.
+            </p>
+        </div>
+    </script>
+    <script id="popup-info-payments-template" type="x-tmpl-mustache">
+        <h2 class="title">Tipos de Pagamento</h3>
+        <div class="description">
+            <p><i class="far fa-credit-card sopas-payments-icon"></i> <b>Transferência Bancária</b>: pode realizar
+                uma transferência bancária através de um NIB ou IBAN disponibilizado pelo estabelecimento aderente
+                à sua escolha que disponha deste tipo de pagamento.
+            </p>
+            <p><i class="fas fa-euro-sign sopas-payments-icon"></i> <b>Em Dinheiro</b>: pode dirigir-se
+                presencialmente e realizar a sua doação em dinheiro no estabelecimento aderente à sua escolha que
+                disponha deste tipo de pagamento.
+            </p>
+            <p>
+                <i title="Multibanco" class="sopas-payments-icon img-icon">
+                    <img src="media/MB-logo.png" alt="Multibanco Logo"></i>
+                <b>Multibanco</b>: pode dirigir-se  presencialmente e realizar a sua doação monetária através do
+                multibanco no estabelecimento aderente à sua escolha que disponha deste tipo de pagamento.
+            </p>
+            <p>
+                <i title="MBWay" class="sopas-payments-icon img-icon">
+                    <img src="media/MBWay-logo.png" alt="MBWay Logo"></i>
+                <b>MBway</b>: pode realizar uma transferência monetária com recurso ao MBway através do contacto
+                telefónico disponibilizado no estabelecimento aderente à sua escolha que disponha deste tipo de
+                pagamento.
+            </p>
+        </div>
+    </script>
+
+
+    <script src='index.js'></script>
+</body>
+
+</html>
