@@ -34,6 +34,8 @@
 		}
 
 		.main-menu{
+			margin-bottom: 5px;
+			padding-bottom: 15px;
 			font-size: 28px;
 			color: #2c461e;
 		}
@@ -192,6 +194,11 @@
 					width: auto;
 				}
 
+				.img-parceria {
+					width: 35%;
+					padding-right: 10px;
+				}
+
 	/* Lists */
 
 		ul.default
@@ -271,7 +278,7 @@
 			margin-top: 2em;
 			padding: 0.90em 1.5em;
 			background: #e95d3c;
-			border-radius: 40px;
+			border-radius: 20px;
 			text-decoration: none;
 			text-transform: uppercase;
 			font-size: 1.1em;
