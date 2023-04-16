@@ -42,15 +42,8 @@
 <body>
     <div id='map'></div>
 
-    <div class="icon" onclick="ShowInfoTemplate('popup-info-general-template')"><img
-            src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></div>
-
-    <div class="mapboxgl-ctrl-top-right">
-        <div class="mapboxgl-ctrl info-ctrl">
-            <button class="info-button" onclick="ShowInfoTemplate('popup-info-general-template')"><i
-                    class="fa fa-info" aria-hidden="true"></i></button>
-        </div>
-    </div>
+    <a class="icon" href="/" id="link-homepage"><img
+            src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></a>
 
     <div class="sopas-popup-background hidden" id="popup">
         <div class="sopas-popup-background-click" onclick="SetInfoVisibility(false)"></div>
@@ -78,29 +71,29 @@
         {{#showModalities}}
         <div class="sopas-modalities">
             {{#soupDonation}}
-            <p title="Sopa Paga"><i class="fas fa-mug-hot"></i></p>
+            <p title="{{^IsEnglish}}Sopa Paga{{/IsEnglish}}{{#IsEnglish}}Paid Soup{{/IsEnglish}}"><i class="fas fa-mug-hot"></i></p>
             {{/soupDonation}}
 
             {{#freeDonation}}
-            <p title="Donativo Livre"><i class="fas fa-hand-holding-usd"></i></p>
+            <p title="{{^IsEnglish}}Donativo Livre{{/IsEnglish}}{{#IsEnglish}}Free Donation{{/IsEnglish}}"><i class="fas fa-hand-holding-usd"></i></p>
             {{/freeDonation}}
             
             {{#foodDonation}}
-            <p title="Donativo em Géneros"><i class="fas fa-carrot"></i></p>
+            <p title="{{^IsEnglish}}Donativo em Géneros{{/IsEnglish}}{{#IsEnglish}}In-kind Donation{{/IsEnglish}}"><i class="fas fa-carrot"></i></p>
             {{/foodDonation}}
 
             <button class="about" onclick="ShowInfoTemplate('popup-info-modalities-template')"
-                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+                title="{{^IsEnglish}}Sobre Modalidades{{/IsEnglish}}{{#IsEnglish}}About Modalities{{/IsEnglish}}"><i class="fas fa-question-circle"></i></button>
         </div>
         {{/showModalities}}
         {{#showPayments}}
         <div class="sopas-payments">
             {{# bankTransferPayment }}
-            <p title="Transferência Multibanco"><i class="far fa-credit-card"></i></p>
+            <p title="{{^IsEnglish}}Transferência Multibanco{{/IsEnglish}}{{#IsEnglish}}Bank Transfer{{/IsEnglish}}"><i class="far fa-credit-card"></i></p>
             {{/ bankTransferPayment }}
 
             {{# moneyPayment }}
-            <p title="Pagamento em Dinheiro"><i class="fas fa-euro-sign"></i></p>
+            <p title="{{^IsEnglish}}Pagamento em Dinheiro{{/IsEnglish}}{{#IsEnglish}}Cash Payment{{/IsEnglish}}"><i class="fas fa-euro-sign"></i></p>
             {{/ moneyPayment }}
 
             {{# multibancoPayment }}
@@ -110,16 +103,16 @@
             {{/ multibancoPayment }}
 
             {{# mbwayPayment }}
-            <p title="MBWay" class="img-icon">
+            <p title="MBway" class="img-icon">
                 <img src="media/MBWay-logo.png" alt="MBWay Logo">
             </p>
             {{/ mbwayPayment }}
 
             <button class="about" onclick="ShowInfoTemplate('popup-info-payments-template')" 
-                title="Sobre Modalidades"><i class="fas fa-question-circle"></i></button>
+                title="{{^IsEnglish}}Sobre Pagamentos{{/IsEnglish}}{{#IsEnglish}}About Payments{{/IsEnglish}}"><i class="fas fa-question-circle"></i></button>
         </div>
         {{/showPayments}}
-        <a class="button" href="{{url}}" target="_blank">Navegar</a>
+        <a class="button" href="{{url}}" target="_blank">{{^IsEnglish}}Navegar{{/IsEnglish}}{{#IsEnglish}}Travel{{/IsEnglish}}</a>
     </script>
     <script id="popup-deliveryservice-template" type="x-tmpl-mustache">
         <h3>{{name}}</h3>
@@ -130,7 +123,7 @@
 
         {{#showDistributionLocations}}
         <div>
-            <p>distribuem em:</p>
+            <p>{{^IsEnglish}}distribuem em{{/IsEnglish}}{{#IsEnglish}}distributing in{{/IsEnglish}}:</p>
             <ul class="sopas-list">
                 {{#distributionLocations}}
                 <li><i class="fas fa-chevron-right"></i> {{name}}</li>
@@ -139,30 +132,10 @@
         </div>
         {{/showDistributionLocations}}
 
-        <a class="button" href="{{url}}" target="_blank">Contactar</a>
+        <a class="button" href="{{url}}" target="_blank">{{^IsEnglish}}Contactar{{/IsEnglish}}{{#IsEnglish}}Contact{{/IsEnglish}}</a>
     </script>
 
     <!-- Sopas pop up templates (informational popup for the map as a whole)-->
-    <script id="popup-info-general-template" type="x-tmpl-mustache">
-        <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
-        <div class="description">
-            <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
-                a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
-                perto de nós vivem.</p>
-            <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
-                precise e
-                não tenha possibilidade de adquirir a possa levantar.</p>
-            <p><i>Precisas de ajuda?</i>
-                Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
-                restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
-        </div>
-        <div class="follow">
-            <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
-                target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
-                target="_blank"><i class="fab fa-instagram"></i></a>
-        </div>
-    </script>
     <script id="popup-info-modalities-template" type="x-tmpl-mustache">
         <h2 class="title">Modalidades</h3>
         <div class="description">
@@ -179,6 +152,24 @@
             </p>
         </div>
     </script>
+    <script id="popup-info-modalities-template-en" type="x-tmpl-mustache">
+        <h2 class="title">Modalities</h3>
+        <div class="description">
+            <p><i class="fas fa-mug-hot sopas-modalities-icon"></i> <b>Paid Soup</b>: you can pay for one or more
+                soups at the partner establishment of your choice with this type of modality available. The soup's
+                cost is defined by the partner establishment and the payment method available. 
+            </p>
+            <p><i class="fas fa-hand-holding-usd sopas-modalities-icon"></i> <b>Free Donation</b>: you can make a
+                monetary donation of any amount you want to the partner establishment of your choice with this type
+                of modality available. It is limited by the payment methods available.
+            </p>
+            <p><i class="fas fa-carrot sopas-modalities-icon"></i> <b>In-kind Donation</b>: you can donate 
+                ingredients for the making of the soup at the partner establishment of your choice with this type
+                of modality available.
+            </p>
+        </div>
+    </script>
+
     <script id="popup-info-payments-template" type="x-tmpl-mustache">
         <h2 class="title">Tipos de Pagamento</h3>
         <div class="description">
@@ -202,6 +193,30 @@
                 <b>MBway</b>: pode realizar uma transferência monetária com recurso ao MBway através do contacto
                 telefónico disponibilizado no estabelecimento aderente à sua escolha que disponha deste tipo de 
                 pagamento.
+            </p>
+        </div>
+    </script>
+    <script id="popup-info-payments-template-en" type="x-tmpl-mustache">
+        <h2 class="title">Types of Payments</h3>
+        <div class="description">
+            <p><i class="far fa-credit-card sopas-payments-icon"></i> <b>Bank Transfer</b>: you can make a bank 
+                transfer through an IBAN made available to you by the partner establishment of your choice with 
+                this type of payment method available.
+            </p>
+            <p><i class="fas fa-euro-sign sopas-payments-icon"></i> <b>In Cash</b>: you can visit in person and 
+                donate cash at the partner establishment of your choice with this type of payment method available.
+            </p>
+            <p>
+                <i title="Multibanco" class="sopas-payments-icon img-icon">
+                    <img src="media/MB-logo.png" alt="Multibanco Logo"></i> 
+                <b>Multibanco</b>: you can visit in person and donate money through the Multibanco system at the
+                partner establishment of your choice with this type of payment method available.
+            </p>
+            <p>
+                <i title="MBWay" class="sopas-payments-icon img-icon">
+                    <img src="media/MBWay-logo.png" alt="MBWay Logo"></i> 
+                <b>MBway</b>: you can donate money through the MBway system using the phone number made available
+                by the partner establishment of your choice with this type of payment method available.
             </p>
         </div>
     </script>

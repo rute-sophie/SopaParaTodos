@@ -7,6 +7,8 @@ var sopasPopupContent;
 var deviceType = "empty";
 var numberFormater = new Intl.NumberFormat('pt-PT', { maximumSignificantDigits: 5 });
 
+var IsEnglish = false;
+
 function IsiOS() {
     return [
         'iPad Simulator',
@@ -66,6 +68,16 @@ function FormatPhoneNumberURL(text) {
 
 
 document.addEventListener("DOMContentLoaded", (event) => {
+    const Link = new URL(window.location.href);
+    IsEnglish = Link.searchParams.has('en');
+
+    if (IsEnglish) {
+        var elem = document.getElementById('link-homepage');
+        var currentLink = elem.getAttribute('href');
+        currentLink += "en/";
+        elem.setAttribute('href', currentLink);
+    }
+
     popupRestaurantTemplate = document.getElementById('popup-restaurant-template').innerHTML;
     popupDeliveryServiceTemplate = document.getElementById('popup-deliveryservice-template').innerHTML;
 
@@ -149,6 +161,8 @@ function onRestaurantClick(feature) {
         moneyPayment: IsNotNullOrEmpty(properties["pagamento-dinheiro"]) && properties["pagamento-dinheiro"].toLowerCase().trim() === "sim",
         multibancoPayment: IsNotNullOrEmpty(properties["pagamento-multibanco"]) && properties["pagamento-multibanco"].toLowerCase().trim() === "sim",
         mbwayPayment: IsNotNullOrEmpty(properties["pagamento-mbway"]) && properties["pagamento-mbway"].toLowerCase().trim() === "sim",
+
+        IsEnglish: IsEnglish
     };
     view.showModalities = view.soupDonation || view.freeDonation || view.foodDonation;
     view.showPayments = view.bankTransferPayment || view.moneyPayment || view.multibancoPayment || view.mbwayPayment;
@@ -179,7 +193,9 @@ function onDeliveryServiceClick(feature) {
         url: url,
 
         showDistributionLocations: false,
-        distributionLocations: []
+        distributionLocations: [],
+
+        IsEnglish: IsEnglish
     };
     // Transform the distribution zone string into an array and add to view
     var distLocText = properties["zona-distribuicao"];
@@ -236,6 +252,9 @@ map.on('click', function (e) {
 });
 
 function ShowInfoTemplate(templateName) {
+    if (IsEnglish) {
+        templateName = templateName + "-en";
+    }
     var template = document.getElementById(templateName).innerHTML;
     sopasPopupContent.innerHTML = Mustache.render(template, null);
     SetInfoVisibility(true);
