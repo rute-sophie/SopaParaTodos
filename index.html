@@ -42,8 +42,16 @@
 <body>
     <div id='map'></div>
 
-    <a class="icon" href="/" id="link-homepage"><img
-            src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos" class="icon-img"></a>
+    <a class="icon" href="/" id="link-homepage"><img src="media/Logo_com_background.png" alt="Logótipo Sopa para Todos"
+            class="icon-img"></a>
+
+    <div class="mapboxgl-ctrl-top-right">
+        <div class="mapboxgl-ctrl info-ctrl">
+            <button class="info-button" onclick="ShowInfoTemplate('popup-info-general-template')"><i class="fa fa-info"
+                    aria-hidden="true"></i></button>
+        </div>
+    </div>
+
 
     <div class="sopas-popup-background hidden" id="popup">
         <div class="sopas-popup-background-click" onclick="SetInfoVisibility(false)"></div>
@@ -136,6 +144,47 @@
     </script>
 
     <!-- Sopas pop up templates (informational popup for the map as a whole)-->
+    <script id="popup-info-general-template" type="x-tmpl-mustache">
+        <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
+        <div class="description">
+            <p>A <b>Sopa para Todos</b> é um movimento nacional que visa contagiar mais e mais pessoas a ajudar
+                a reerguer a restauração ao mesmo tempo que ajudamos a combater a fome das famílias que mais
+                perto de nós vivem.</p>
+            <p><i>Como posso ajudar?</i> Deixa uma sopa/refeição paga num estabelecimento aderente para que quem
+                precise e
+                não tenha possibilidade de adquirir a possa levantar.</p>
+            <p><i>Precisas de ajuda?</i>
+                Contacta diretamente um restaurante aderente ou pede apoio à comunidade para chegares a um
+                restaurante perto de ti para que possas contactá-lo e reservar a tua sopa/refeição.</p>
+        </div>
+        <div class="follow">
+            <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
+                target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
+                target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </script>
+    <script id="popup-info-general-template-en" type="x-tmpl-mustache">
+        <div class="logo"><img src="media/Logo.svg" alt="Sopa para Todos" class="logo-image"></div>
+        <div class="description">
+            <p><b>Sopa para Todos</b> (Soup for All) is a national movement that consists of helping
+                to rebuild restaurants while helping to fight hunger in Portugal.
+            </p>
+            <p><i>How can I help?</i> You can leave a paid soup in a partner establishment, so that
+                those who need it can order a soup for free.
+            </p>
+            <p><i>Do you need help?</i> If you are in need, contact a partner establishment near you 
+                or reach out to your community to help you find one and save you a soup.
+            </p>
+        </div>
+        <div class="follow">
+            <a href="https://www.facebook.com/groups/1904898662997863" class="follow-link facebook"
+                target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/sopa_para_todos_pt/" class="follow-link instagram"
+                target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </script>
+
     <script id="popup-info-modalities-template" type="x-tmpl-mustache">
         <h2 class="title">Modalidades</h3>
         <div class="description">
