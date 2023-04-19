@@ -68,6 +68,14 @@ function FormatPhoneNumberURL(text) {
 
 
 document.addEventListener("DOMContentLoaded", (event) => {
+    popupRestaurantTemplate = document.getElementById('popup-restaurant-template').innerHTML;
+    popupDeliveryServiceTemplate = document.getElementById('popup-deliveryservice-template').innerHTML;
+
+    sopasPopupContent = document.getElementById('sopas-popup-content');
+
+    deviceType = GetDeviceType();
+
+    // Language
     const Link = new URL(window.location.href);
     IsEnglish = Link.searchParams.has('en');
 
@@ -76,14 +84,12 @@ document.addEventListener("DOMContentLoaded", (event) => {
         var currentLink = elem.getAttribute('href');
         currentLink += "en/";
         elem.setAttribute('href', currentLink);
+
+        var buttonLangPt = document.getElementById('button-lang-pt');
+        var buttonLangEn = document.getElementById('button-lang-en');
+        buttonLangPt.style.display = 'none';
+        buttonLangEn.style.display = 'block';
     }
-
-    popupRestaurantTemplate = document.getElementById('popup-restaurant-template').innerHTML;
-    popupDeliveryServiceTemplate = document.getElementById('popup-deliveryservice-template').innerHTML;
-
-    sopasPopupContent = document.getElementById('sopas-popup-content');
-
-    deviceType = GetDeviceType();
 });
 
 mapboxgl.accessToken = 'pk.eyJ1IjoicmljYXJkb2Vwcm9kcmlndWVzIiwiYSI6ImNra3JoM2M0dDAzbXYybnA2cWlnNzQ1NmsifQ.wSNvYjHSceafKy-fPUb-yg'; // replace this with your access token
@@ -269,5 +275,20 @@ function SetInfoVisibility(visibility) {
     } else {
         // Close Info Popup
         el.classList.add('hidden');
+    }
+}
+
+function SwitchLang(lang) {
+    if (IsEnglish && lang == "EN") return;
+    if (!IsEnglish && lang == "PT") return;
+
+    const Link = new URL(window.location.href);
+    if(lang == "EN") {
+        Link.searchParams.append("en", "");
+        window.location.href = Link;
+    } else {
+        // PT
+        Link.searchParams.delete("en");
+        window.location.href = Link;
     }
 }
